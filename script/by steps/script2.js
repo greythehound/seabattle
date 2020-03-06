@@ -8,7 +8,7 @@ const header = document.querySelector('.header');
 
 
 const play = {
-    record: 0,
+    record: localStorage.getItem('seaBattlerRecord') || 0,
     shot: 0,
     hit: 0,
     dead: 0,
@@ -65,12 +65,12 @@ const fire = (event) => {
     const target = event.target;
     const missed = target.classList.contains('miss');
 // missing shots
-    if (!missed && target.tagName === 'TD') {
+    if (target.classList.length > 0 || 
+        target.tagName !== 'TD' ||
+        !game.shipCount) return;
+
         show.miss(target);
         play.updateData = 'shot';
-    } else {
-        return;
-    }
 
     for (let i = 0; i < game.ships.length; i++) {
         const ship = game.ships[i];
@@ -89,12 +89,15 @@ const fire = (event) => {
                 }
                 game.shipCount -= 1;
 
-                if (game.shipCount < 1) {
+                if (!game.shipCount) {
                     header.textContent = 'GAME is OVER!';
                     header.style.color = 'red';
 
-                    localStorage.setItem('seaBattlerRecord', play.shot);
-                    
+                    if (play.shot < play.record || play.record === 0) {
+                        localStorage.setItem('seaBattlerRecord', play.shot);
+                        play.record = play.shot;
+                        play.render();
+                    }
                 }
             }
         }
@@ -104,6 +107,17 @@ const fire = (event) => {
 
 const init = () => {
     enemy.addEventListener('click', fire);
+    play.render();
+
+    again.addEventListener('click', () => {
+        location.reload();
+    });
+
 }
 
 init();
+
+
+// Homework
+// После завершения игры запретить выстрелы по игровому полю
+// Restrict ,making shots to empty cells when game is over
