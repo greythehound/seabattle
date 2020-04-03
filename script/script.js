@@ -6,7 +6,7 @@ const enemy = document.getElementById('enemy');
 const again = document.getElementById('again');
 const header = document.querySelector('.header');
 
-
+const user = 10;
 const play = {
     record: localStorage.getItem('seaBattlerRecord') || 0,
     shot: 0,
